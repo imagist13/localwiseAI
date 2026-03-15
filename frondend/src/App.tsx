@@ -200,7 +200,7 @@ const providerFactory = (conversationKey: string) => {
       conversationKey,
       new DeepSeekChatProvider({
         request: XRequest<XModelParams, Partial<Record<SSEFields, XModelResponse>>>(
-          'http://127.0.0.1:8000/chat',
+          (import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/chat` : '/chat'),
           {
             manual: true,
             params: {
@@ -213,7 +213,7 @@ const providerFactory = (conversationKey: string) => {
     );
   }
   return providerCaches.get(conversationKey);
-};6
+};
 const Footer: React.FC<{
   id?: string;
   content: string;
