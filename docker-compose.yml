@@ -1,0 +1,41 @@
+services:
+  # 后端服务
+  backend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: foodwise-backend
+    ports:
+      - "8001:8000"
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-chat}
+      - TAVILY_API_KEY=${TAVILY_API_KEY:-}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localwise.top,http://www.localwise.top,http://localhost:8080}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./frondend
+      dockerfile: Dockerfile
+    container_name: foodwise-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+# 网络让前后端可以互相访问
+networks:
+  default:
+    name: foodwise-network
